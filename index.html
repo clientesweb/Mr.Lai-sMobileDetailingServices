@@ -66,9 +66,10 @@
             opacity: 1;
             transform: translateY(0);
         }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-black text-white font-sans" x-data="{ mobileMenu: false, currentSlide: 0, modalOpen: false, selectedImage: '', loading: false, currentBanner: 0 }">
+<body class="bg-black text-white font-sans" x-data="{ mobileMenu: false, currentSlide: 0, loading: false, currentBanner: 0 }" x-init="$nextTick(() => { console.log('Body initialized') })">
     <!-- Preloader -->
     <div x-show="loading" class="fixed inset-0 z-50 flex items-center justify-center bg-black">
         <div class="text-center">
@@ -213,7 +214,9 @@
         </section>
 
         <!-- Gallery Section with Filter and Modal -->
-        <section id="gallery" class="py-16 md:py-20 bg-gradient-to-b from-gray-gradient-start to-gray-gradient-end" x-data="{ activeFilter: 'all' }">
+        <section id="gallery" class="py-16 md:py-20 bg-gradient-to-b from-gray-gradient-start to-gray-gradient-end" 
+         x-data="{ activeFilter: 'all', modalOpen: false, selectedImage: '' }"
+         x-init="$nextTick(() => { console.log('Gallery initialized, modalOpen:', modalOpen) })">
             <div class="container mx-auto px-4">
                 <h2 class="text-2xl md:text-3xl font-bold mb-8 md:mb-12 text-center fade-in">Our Work</h2>
                 <div class="flex flex-wrap justify-center space-x-2 md:space-x-4 mb-6 md:mb-8 fade-in">
@@ -242,21 +245,21 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div x-show="activeFilter === 'all' || activeFilter === 'exterior'"
                          class="bg-gray-800 h-48 md:h-64 rounded-lg overflow-hidden cursor-pointer fade-in"
-                         @click="modalOpen = true; selectedImage = 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'">
+                         @click="modalOpen = true; selectedImage = 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'; console.log('Modal opened:', modalOpen)">
                         <img src="https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
                              alt="Exterior Detailing"
                              class="w-full h-full object-cover">
                     </div>
                     <div x-show="activeFilter === 'all' || activeFilter === 'interior'"
                          class="bg-gray-800 h-48 md:h-64 rounded-lg overflow-hidden cursor-pointer fade-in"
-                         @click="modalOpen = true; selectedImage = 'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'">
+                         @click="modalOpen = true; selectedImage = 'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'; console.log('Modal opened:', modalOpen)">
                         <img src="https://images.unsplash.com/photo-1601362840469-51e4d8d58785?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
                              alt="Interior Detailing"
                              class="w-full h-full object-cover">
                     </div>
                     <div x-show="activeFilter === 'all' || activeFilter === 'ceramic'"
                          class="bg-gray-800 h-48 md:h-64 rounded-lg overflow-hidden cursor-pointer fade-in"
-                         @click="modalOpen = true; selectedImage = 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'">
+                         @click="modalOpen = true; selectedImage = 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80'; console.log('Modal opened:', modalOpen)">
                         <img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
                              alt="Ceramic Coating"
                              class="w-full h-full object-cover">
@@ -265,7 +268,13 @@
                 </div>
             </div>
             <!-- Modal -->
-            <div x-show="modalOpen" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div x-show="modalOpen" 
+                 x-cloak
+                 @keydown.escape.window="modalOpen = false"
+                 class="fixed inset-0 z-50 overflow-y-auto" 
+                 aria-labelledby="modal-title" 
+                 role="dialog" 
+                 aria-modal="true">
                 <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                     <div x-show="modalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
                     <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
@@ -283,7 +292,9 @@
                             </div>
                         </div>
                         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" @click="modalOpen = false">
+                            <button type="button" 
+                                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" 
+                                    @click="modalOpen = false; console.log('Modal closed:', modalOpen)">
                                 Close
                             </button>
                         </div>
@@ -343,7 +354,7 @@
                                             <h4 class="font-bold">Mike Johnson</h4>
                                             <div class="flex">
                                                 <i class="fas fa-star text-yellow-400"></i>
-                                                <i class="fas fa-star text-yellow-400"></i>
+                                                                               <i class="fas fa-star text-yellow-400"></i>
                                                 <i class="fas fa-star text-yellow-400"></i>
                                                 <i class="fas fa-star text-yellow-400"></i>
                                                 <i class="fas fa-star text-yellow-400"></i>
